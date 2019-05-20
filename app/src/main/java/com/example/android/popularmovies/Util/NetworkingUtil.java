@@ -56,4 +56,23 @@ public class NetworkingUtil
         }
         return null;
     }
+
+    public static URL buildPhotoURL(String movieID)
+    {
+        Uri movieUri =Uri.parse(BASE_MOVIE_URL).buildUpon()
+                .appendEncodedPath(String.valueOf(movieID))
+                .appendQueryParameter(API_KEY,API_KEY_VALUE)
+                .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
+                .build();
+        try
+        {
+            return new URL(movieUri.toString());
+        } catch
+        (MalformedURLException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

@@ -436,11 +436,15 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycle_view_id);
-        recyclerView.setLayoutManager(new GridLayoutManager(this,1));
+        recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        recyclerView.setHasFixedSize(true);
+
+
+
         movieAdapter = new MovieAdapter(JsonUtil.extractMovieList(x),this);
         recyclerView.setAdapter(movieAdapter);
 
-        //Log.d(TAG, JsonUtil.extractMovieList(xx).get(0).toString()+"");
+        Log.d(TAG, JsonUtil.extractMovieList(x).get(0).toString()+"");
 
     }
 

@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 {
     private List<Movie> mMovies;
     private Context mContext;
+    private String TAG = MovieAdapter.class.getName();
 
     public MovieAdapter(List<Movie> movies,Context context)
     {
@@ -63,7 +65,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         {
             mMovieTitleView.setText(mMovies.get(position).getFilmTitle());
             mRatingBarView.setRating(mMovies.get(position).getRating()/2);
-//            Glide.with(mContext).load()
+            Glide.with(mContext).load("http://image.tmdb.org/t/p/" + "w500/"+mMovies.get(position).getImageLink()).into(mPosterView);
+            Log.d(TAG,"http://image.tmdb.org/t/p/" + "w185/"+mMovies.get(position).getImageLink());
         }
     }
 }
