@@ -64,7 +64,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
         public void bindTo(int position)
         {
-            String filmTitle = StringCheck.StrinFixer(mMovies.get(position).getFilmTitle());
+            String filmTitle = StringCheck.stringFixer(mMovies.get(position).getFilmTitle());
             mMovieTitleView.setText(filmTitle);
             mRatingBarView.setRating(mMovies.get(position).getRating()/2);
             Glide.with(mContext).load("http://image.tmdb.org/t/p/" + "w500/"+mMovies.get(position).getImageLink()).into(mPosterView);

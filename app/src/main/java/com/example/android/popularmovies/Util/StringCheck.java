@@ -1,19 +1,18 @@
 package com.example.android.popularmovies.Util;
 
-import java.util.StringTokenizer;
+
 
 public class StringCheck
 {
-    public static String StrinFixer(String x)
+    public static String stringFixer(String x)
     {
-        StringTokenizer tokenizer;
-        if (x.length() > "AVENGERS ENDGAME SLAW ".length() || x.contains(":"))
+        StringBuilder builder = new StringBuilder();
+        if (x.length() > 17)
         {
-            tokenizer = new StringTokenizer(x,":");
-            return tokenizer.nextToken();
+            builder.append(x.substring(0,15));
+            builder.append("...");
+            return builder.toString();
         }
         return x;
-
-
     }
 }

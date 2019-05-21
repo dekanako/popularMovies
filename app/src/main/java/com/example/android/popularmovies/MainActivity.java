@@ -441,7 +441,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, StringCheck.StrinFixer("AVENGERS ENDGAME : OWWWW"));
 
         recyclerView = findViewById(R.id.recycle_view_id);
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));
