@@ -4,13 +4,18 @@ package com.example.android.popularmovies;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.android.popularmovies.Util.JsonUtil;
 import com.example.android.popularmovies.Util.NetworkingUtil;
+import com.example.android.popularmovies.Util.StringCheck;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -435,16 +440,47 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d(TAG, StringCheck.StrinFixer("AVENGERS ENDGAME : OWWWW"));
+
         recyclerView = findViewById(R.id.recycle_view_id);
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+
         recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                int position = parent.getChildAdapterPosition(view); // item position
+                int spanCount = 2;
+                int spacing = 10;//spacing between views in grid
+
+                if (position >= 0)
+                {
+                    int column = position % spanCount; // item column
+                    Log.d(TAG, " column " +column);
+
+                    outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                    outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                    if (position < spanCount) { // top edge
+                        outRect.top = spacing;
+                    }
+                    outRect.bottom = spacing; // item bottom
+                } else {
+                    outRect.left = 0;
+                    outRect.right = 0;
+                    outRect.top = 0;
+                    outRect.bottom = 0;
+                }
+            }
+        });
 
 
 
         movieAdapter = new MovieAdapter(JsonUtil.extractMovieList(x),this);
         recyclerView.setAdapter(movieAdapter);
 
-        Log.d(TAG, JsonUtil.extractMovieList(x).get(0).toString()+"");
+
 
     }
 

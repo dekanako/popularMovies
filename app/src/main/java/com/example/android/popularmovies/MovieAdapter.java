@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.Util.StringCheck;
 
 import java.util.List;
 
@@ -63,7 +64,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
         public void bindTo(int position)
         {
-            mMovieTitleView.setText(mMovies.get(position).getFilmTitle());
+            String filmTitle = StringCheck.StrinFixer(mMovies.get(position).getFilmTitle());
+            mMovieTitleView.setText(filmTitle);
             mRatingBarView.setRating(mMovies.get(position).getRating()/2);
             Glide.with(mContext).load("http://image.tmdb.org/t/p/" + "w500/"+mMovies.get(position).getImageLink()).into(mPosterView);
             Log.d(TAG,"http://image.tmdb.org/t/p/" + "w185/"+mMovies.get(position).getImageLink());
