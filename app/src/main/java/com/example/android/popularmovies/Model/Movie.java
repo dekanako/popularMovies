@@ -9,19 +9,63 @@ public class Movie implements Parcelable
 {
     private String imageLink;
     private String filmTitle;
-    private int rating;
+    private double rating;
     private int dbMovieId;
 
-    public Movie(String imageLink, String filmTitle, int rating, int DBMoviesMoviID) {
+    private String coverImage;
+    private String overView;
+    private String date;
+
+    public Movie(String imageLink, String filmTitle, double rating, int dbMovieId, String coverImage, String overView, String date) {
         this.imageLink = imageLink;
         this.filmTitle = filmTitle;
         this.rating = rating;
-        this.dbMovieId = DBMoviesMoviID;
+        this.dbMovieId = dbMovieId;
+        this.coverImage = coverImage;
+        this.overView = overView;
+        this.date = date;
     }
 
     private Movie(Parcel p)
     {
 
+        imageLink = p.readString();
+        filmTitle = p.readString();
+        rating = p.readDouble();
+        dbMovieId = p.readInt();
+
+        coverImage = p.readString();
+        overView = p.readString();
+        date = p.readString();
+
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(imageLink);
+        dest.writeString(filmTitle);
+        dest.writeDouble(rating);
+        dest.writeInt(dbMovieId);
+
+        dest.writeString(coverImage);
+        dest.writeString(overView);
+        dest.writeString(date);
+    }
+    public String getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
+    public String getOverView() {
+        return overView;
+    }
+
+    public void setOverView(String overView) {
+        this.overView = overView;
     }
 
     public int getDbMovieId() {
@@ -52,7 +96,7 @@ public class Movie implements Parcelable
         this.filmTitle = filmTitle;
     }
 
-    public int getRating()
+    public double getRating()
     {
         return rating;
     }
@@ -65,13 +109,21 @@ public class Movie implements Parcelable
         this.rating = rating;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     @NonNull
     @Override
     public String toString()
     {
-        return imageLink + " " + filmTitle + " " + getRating() + " " +dbMovieId;
+        return imageLink + " " + filmTitle + " " + getRating() + " " +dbMovieId + "  " + getImageLink() + " " + overView ;
     }
 
+    public static Creator<Movie> getCREATOR()
+    {
+        return CREATOR;
+    }
 
     @Override
     public int describeContents()
@@ -79,9 +131,16 @@ public class Movie implements Parcelable
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
 
-    }
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[0];
+        }
+    };
+
 }

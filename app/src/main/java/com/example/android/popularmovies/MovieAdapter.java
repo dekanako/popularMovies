@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,8 +66,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-
+                public void onClick(View v)
+                {
+                    Intent intent = new Intent(mContext,DetailActivity.class);
+                    Movie movie = mMovies.get(getAdapterPosition());
+                    intent.putExtra(Intent.EXTRA_INTENT,movie);
+                    mContext.startActivity(intent);
                 }
             });
         }
@@ -74,7 +79,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         {
             String filmTitle = StringCheck.stringFixer(mMovies.get(position).getFilmTitle());
             mMovieTitleView.setText(filmTitle);
-            mRatingBarView.setRating(mMovies.get(position).getRating()/2);
+            mRatingBarView.setRating((int)mMovies.get(position).getRating()/2);
             Glide.with(mContext).load("http://image.tmdb.org/t/p/" + "w500/"+mMovies.get(position).getImageLink()).into(mPosterView);
         }
     }

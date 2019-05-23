@@ -17,6 +17,10 @@ public class JsonUtil
     private static final String RATE = "vote_average";
     private static final String TITLE = "title";
     private static final String POSTER_PATH = "poster_path";
+    private static final String OVERVIEW = "overview";
+    private static final String BACKGROUND_IMAGE = "backdrop_path";
+    private static final String RELEASE_DATE = "release_date";
+
     private static final String TAG = JsonUtil.class.getName();
     public static  List<Movie> extractMovieList(String json)
     {
@@ -31,13 +35,19 @@ public class JsonUtil
                 JSONObject jsonObject = array.getJSONObject(x);
                 int movieIDExtracted = jsonObject.getInt(ID);
 
-                int movieRateExtracted = jsonObject.getInt(RATE);
+                double movieRateExtracted = jsonObject.getDouble(RATE);
 
                 String movieTitleExtracted = jsonObject.getString(TITLE);
 
                 String posterPathExtracted = jsonObject.getString(POSTER_PATH);
 
-                movie.add( new Movie(posterPathExtracted, movieTitleExtracted, movieRateExtracted, movieIDExtracted));
+                String overView = jsonObject.getString(OVERVIEW);
+
+                String coverImage = jsonObject.getString(BACKGROUND_IMAGE);
+
+                String date = jsonObject.getString(RELEASE_DATE);
+
+                movie.add(new Movie(posterPathExtracted,movieTitleExtracted,movieRateExtracted,movieIDExtracted,coverImage,overView,date));
             }
         }
         catch (JSONException e)
