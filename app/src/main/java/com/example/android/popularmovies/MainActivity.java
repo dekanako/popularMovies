@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startActivity(new Intent(this,DetailActivity.class));
         new MoviesAsyncTaske().execute("1");
         movieAdapter = new MovieAdapter(new ArrayList<Movie>(),this);
         recyclerView = findViewById(R.id.recycle_view_id);

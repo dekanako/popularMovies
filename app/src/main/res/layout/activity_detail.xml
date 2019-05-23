@@ -102,19 +102,15 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="390dp"
+        android:layout_width="374dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_marginTop="8dp"
         android:text="After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaining allies, the Avengers must assemble once more in order to undo Thanos' actions and restore order to the universe once and for all, no matter what consequences may be in store."
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageButton"
-        app:layout_constraintHorizontal_bias="0.272"
         app:layout_constraintStart_toStartOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:layout_constraintVertical_bias="0.079" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
 
     <TextView
         android:id="@+id/textView5"

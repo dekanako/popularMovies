@@ -1,8 +1,11 @@
 package com.example.android.popularmovies.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
-public class Movie
+public class Movie implements Parcelable
 {
     private String imageLink;
     private String filmTitle;
@@ -14,6 +17,11 @@ public class Movie
         this.filmTitle = filmTitle;
         this.rating = rating;
         this.dbMovieId = DBMoviesMoviID;
+    }
+
+    private Movie(Parcel p)
+    {
+
     }
 
     public int getDbMovieId() {
@@ -62,5 +70,18 @@ public class Movie
     public String toString()
     {
         return imageLink + " " + filmTitle + " " + getRating() + " " +dbMovieId;
+    }
+
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+
     }
 }
