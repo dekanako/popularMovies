@@ -1,5 +1,7 @@
 package com.example.android.popularmovies.Util;
 
+import android.util.Log;
+
 import com.example.android.popularmovies.Model.Movie;
 
 import org.json.JSONArray;
@@ -15,9 +17,10 @@ public class JsonUtil
     private static final String RATE = "vote_average";
     private static final String TITLE = "title";
     private static final String POSTER_PATH = "poster_path";
-
+    private static final String TAG = JsonUtil.class.getName();
     public static  List<Movie> extractMovieList(String json)
     {
+        Log.d(TAG,json);
         List<Movie> movie = new ArrayList<>();
         try {
             JSONObject baseJsonObject = new JSONObject(json);
@@ -41,6 +44,7 @@ public class JsonUtil
         {
             e.printStackTrace();
         }
+        Log.d(TAG,"SIZE IS"+movie.size());
         return movie;
     }
 }

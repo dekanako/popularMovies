@@ -3,8 +3,12 @@ package com.example.android.popularmovies.Util;
 
 import android.net.Uri;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Scanner;
 
 public class NetworkingUtil
 {
@@ -59,7 +63,7 @@ public class NetworkingUtil
 
     public static URL buildPhotoURL(String movieID)
     {
-        Uri movieUri =Uri.parse(BASE_MOVIE_URL).buildUpon()
+        Uri movieUri = Uri.parse(BASE_MOVIE_URL).buildUpon()
                 .appendEncodedPath(String.valueOf(movieID))
                 .appendQueryParameter(API_KEY,API_KEY_VALUE)
                 .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
@@ -67,12 +71,37 @@ public class NetworkingUtil
         try
         {
             return new URL(movieUri.toString());
-        } catch
-        (MalformedURLException e)
+        }
+        catch (MalformedURLException e)
         {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getResponseFromHttpUrlUsingScanner(URL url) throws IOException
+    {
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        try
+        {
+
+            InputStream in = urlConnection.getInputStream();
+            Scanner scanner = new Scanner(in).useDelimiter("\\A");
+
+            if (scanner.hasNext())
+            {
+                return scanner.next();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        finally
+        {
+            urlConnection.disconnect();
+        }
+
     }
 
 }

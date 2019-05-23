@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.Model.Movie;
@@ -61,6 +62,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             mMovieTitleView = itemView.findViewById(R.id.movie_title_id);
             mPosterView = itemView.findViewById(R.id.poster_view_id);
             mRatingBarView = itemView.findViewById(R.id.rateing_bar_id);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
         }
         public void bindTo(int position)
         {
@@ -68,7 +76,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             mMovieTitleView.setText(filmTitle);
             mRatingBarView.setRating(mMovies.get(position).getRating()/2);
             Glide.with(mContext).load("http://image.tmdb.org/t/p/" + "w500/"+mMovies.get(position).getImageLink()).into(mPosterView);
-            Log.d(TAG,"http://image.tmdb.org/t/p/" + "w185/"+mMovies.get(position).getImageLink());
         }
     }
 }

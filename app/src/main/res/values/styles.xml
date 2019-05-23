@@ -12,4 +12,9 @@
         <item name="colorControlActivated">@color/lightGrey</item>
     </style>
 
+    <style name="card_view_style">
+        <item name="android:background">@color/primaryColor</item>
+
+    </style>
+
 </resources>
