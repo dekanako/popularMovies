@@ -13,8 +13,11 @@ import java.util.Scanner;
 public class NetworkingUtil
 {
     private static final String BASE_MOVIE_URL ="https://api.themoviedb.org/3/movie";
-    private static final String API_KEY= "api_key";
+    private static final String BASE_PHOTO_URL = "http://image.tmdb.org/t/p/";
+
+    private static final String API_KEY = "api_key";
     private static final String API_KEY_VALUE = "90429cbb0771760ab50be543df397f62";
+
 
 
     private static final String POPULAR_PATH ="popular";
@@ -28,7 +31,7 @@ public class NetworkingUtil
     private static final String LANGUAGE_VALUE = "en-US";
 
    // "https://api.themoviedb.org/3/movie/458156?api_key=90429cbb0771760ab50be543df397f62&language=en-US\n"
-
+//    public static final String Quality_2
     public static URL buildURLForListOfPopularMovies(int page)
     {
         Uri movieUri =Uri.parse(BASE_MOVIE_URL).buildUpon()
@@ -79,12 +82,20 @@ public class NetworkingUtil
         return null;
     }
 
-    public static URL buildPhotoURL(String movieID)
+
+
+
+    /**
+     *
+     * @param movieImagePath append the movie path to the url
+     * @param quality select the quality of the photo
+     * @return the url which has been built by those parameters
+     */
+    public static URL buildPhotoURL(String movieImagePath,String quality)
     {
-        Uri movieUri = Uri.parse(BASE_MOVIE_URL).buildUpon()
-                .appendEncodedPath(String.valueOf(movieID))
-                .appendQueryParameter(API_KEY,API_KEY_VALUE)
-                .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
+        Uri movieUri = Uri.parse(BASE_PHOTO_URL).buildUpon()
+                .appendEncodedPath(quality)
+                .appendEncodedPath(movieImagePath)
                 .build();
         try
         {
