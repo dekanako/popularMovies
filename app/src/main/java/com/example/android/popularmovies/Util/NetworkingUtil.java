@@ -84,7 +84,8 @@ public class NetworkingUtil
 
 
 
-
+    public static final String BAKDROP_IMAGE_W1280 = "w1280";
+    public static final String POSTER_IMAGE_W500 = "w500";
     /**
      *
      * @param movieImagePath append the movie path to the url
@@ -93,7 +94,8 @@ public class NetworkingUtil
      */
     public static URL buildPhotoURL(String movieImagePath,String quality)
     {
-        Uri movieUri = Uri.parse(BASE_PHOTO_URL).buildUpon()
+        Uri movieUri = Uri.parse(BASE_PHOTO_URL)
+                .buildUpon()
                 .appendEncodedPath(quality)
                 .appendEncodedPath(movieImagePath)
                 .build();

@@ -3,6 +3,7 @@
     <string name="popular">Popular</string>
     <string name="top_rated">Top_Rated</string>
     <string name="query_preferences">query_preferences</string>
+    <string name="overview_string">Overview</string>
     <string-array name="query_array">
         <item>@string/popular</item>
         <item>@string/top_rated</item>

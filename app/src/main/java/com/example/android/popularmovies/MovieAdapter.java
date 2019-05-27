@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.Util.NetworkingUtil;
 import com.example.android.popularmovies.Util.StringCheck;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>
+public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     private List<Movie> mMovies;
     private Context mContext;
@@ -34,17 +34,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @NonNull
     @Override
-    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_list_item,parent,false);
-
         return new MovieViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MovieViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position)
     {
-        holder.bindTo(position);
+
+        if (holder instanceof MovieViewHolder)
+        {
+            bindTo(position,(MovieViewHolder) holder);
+        }
+
     }
 
     @Override
@@ -62,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             super(itemView);
             mMovieTitleView = itemView.findViewById(R.id.movie_title_id);
             mPosterView = itemView.findViewById(R.id.poster_view_id);
-            mRatingBarView = itemView.findViewById(R.id.rateing_bar_id);
+            mRatingBarView = itemView.findViewById(R.id.rating_bar_id);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -75,12 +79,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 }
             });
         }
-        public void bindTo(int position)
-        {
-            String filmTitle = StringCheck.stringFixer(mMovies.get(position).getFilmTitle());
-            mMovieTitleView.setText(filmTitle);
-            mRatingBarView.setRating((int)mMovies.get(position).getRating()/2);
-            Glide.with(mContext).load("http://image.tmdb.org/t/p/" + "w500/"+mMovies.get(position).getImageLink()).into(mPosterView);
-        }
+
     }
+    public void bindTo(int position,MovieViewHolder holder)
+    {
+        String filmTitle = StringCheck.stringFixer(mMovies.get(position).getFilmTitle());
+       holder.mMovieTitleView.setText(filmTitle);
+        holder.mRatingBarView.setRating((float) mMovies.get(position).getRating()/2);
+        Glide.with(mContext).load(NetworkingUtil.buildPhotoURL(mMovies.get(position).getImageLink(),NetworkingUtil.POSTER_IMAGE_W500)).into(holder.mPosterView);
+    }
+
+
 }
