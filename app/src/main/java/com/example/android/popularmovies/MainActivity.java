@@ -234,7 +234,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getActiveNetworkInfo() == null )
         {
-
             mRecyclerView.setVisibility(View.INVISIBLE);
             mOopsView.setVisibility(View.VISIBLE);
             return false;

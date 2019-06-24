@@ -84,7 +84,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void bindTo(int position,MovieViewHolder holder)
     {
         String filmTitle = StringCheck.stringFixer(mMovies.get(position).getFilmTitle());
-       holder.mMovieTitleView.setText(filmTitle);
+        holder.mMovieTitleView.setText(filmTitle);
         holder.mRatingBarView.setRating((float) mMovies.get(position).getRating()/2);
         Glide.with(mContext).load(NetworkingUtil.buildPhotoURL(mMovies.get(position).getImageLink(),NetworkingUtil.POSTER_IMAGE_W500)).into(holder.mPosterView);
     }

@@ -26,7 +26,8 @@ public class JsonUtil
     {
 
         List<Movie> movie = new ArrayList<>();
-        try {
+        try
+        {
             JSONObject baseJsonObject = new JSONObject(json);
             JSONArray array = baseJsonObject.getJSONArray("results");
 
@@ -55,5 +56,19 @@ public class JsonUtil
             e.printStackTrace();
         }
         return movie;
+    }
+
+    public static String extractTrailerPath(String json)
+    {
+        try
+        {
+            JSONObject object = new JSONObject(json);
+
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package com.example.android.popularmovies.Util;
 
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +31,13 @@ public class NetworkingUtil
 
     private static final String LANGUAGE_VALUE = "en-US";
 
-   // "https://api.themoviedb.org/3/movie/458156?api_key=90429cbb0771760ab50be543df397f62&language=en-US\n"
-//    public static final String Quality_2
+    private static final String APPEND_TO_RESPONSE = "append_to_response";
+
+    private static final String APPEND_VALUE = "videos";
+    private static final String TAG = NetworkingUtil.class.getName() ;
+
+    // "https://api.themoviedb.org/3/movie/458156?api_key=90429cbb0771760ab50be543df397f62&language=en-US\n"
+   // public static final String Quality_2
     public static URL buildURLForListOfPopularMovies(int page)
     {
         Uri movieUri =Uri.parse(BASE_MOVIE_URL).buildUpon()
@@ -40,6 +46,7 @@ public class NetworkingUtil
                 .appendQueryParameter(PAGE,String.valueOf(page))
                 .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
                 .build();
+        Log.d(TAG,movieUri.toString());
         try {
             return new URL(movieUri.toString());
         } catch (MalformedURLException e) {
@@ -66,12 +73,13 @@ public class NetworkingUtil
 
     public static URL buildURLForOneMovie(int movieID)
     {
-        Uri movieUri =Uri.parse(BASE_MOVIE_URL).buildUpon()
+        Uri movieUri =  Uri.parse(BASE_MOVIE_URL).buildUpon()
                 .appendEncodedPath(String.valueOf(movieID))
                 .appendQueryParameter(API_KEY,API_KEY_VALUE)
                 .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
+                .appendQueryParameter(APPEND_TO_RESPONSE,APPEND_VALUE)
                 .build();
-        try
+         try
         {
             return new URL(movieUri.toString());
         } catch
@@ -84,10 +92,9 @@ public class NetworkingUtil
 
 
 
-    public static final String BAKDROP_IMAGE_W1280 = "w1280";
+    public static final String BACKDROP_IMAGE_W1280 = "w1280";
     public static final String POSTER_IMAGE_W500 = "w500";
     /**
-     *
      * @param movieImagePath append the movie path to the url
      * @param quality select the quality of the photo
      * @return the url which has been built by those parameters
