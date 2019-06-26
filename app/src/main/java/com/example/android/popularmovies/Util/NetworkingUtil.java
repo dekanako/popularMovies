@@ -1,6 +1,8 @@
 package com.example.android.popularmovies.Util;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -34,6 +36,11 @@ public class NetworkingUtil
     private static final String APPEND_TO_RESPONSE = "append_to_response";
 
     private static final String APPEND_VALUE = "videos";
+
+
+
+    private static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
+
     private static final String TAG = NetworkingUtil.class.getName() ;
 
     // "https://api.themoviedb.org/3/movie/458156?api_key=90429cbb0771760ab50be543df397f62&language=en-US\n"
@@ -47,9 +54,12 @@ public class NetworkingUtil
                 .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
                 .build();
         Log.d(TAG,movieUri.toString());
-        try {
+        try
+        {
             return new URL(movieUri.toString());
-        } catch (MalformedURLException e) {
+        }
+        catch (MalformedURLException e)
+        {
             e.printStackTrace();
         }
         return null;
@@ -139,7 +149,10 @@ public class NetworkingUtil
         {
             urlConnection.disconnect();
         }
-
+    }
+    public static Uri createYoutubeLink(String youtubeTrailerKey)
+    {
+        return Uri.parse(YOUTUBE_URL.concat(youtubeTrailerKey));
     }
 
 }

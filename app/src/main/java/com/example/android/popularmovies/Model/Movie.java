@@ -2,11 +2,13 @@ package com.example.android.popularmovies.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 public class Movie implements Parcelable
 {
+    public static final String TAG = Movie.class.getName();
     private String imageLink;
     private String filmTitle;
     private double rating;
@@ -16,7 +18,10 @@ public class Movie implements Parcelable
     private String overView;
     private String date;
 
-    public Movie(String imageLink, String filmTitle, double rating, int dbMovieId, String coverImage, String overView, String date) {
+    private Trailer[] trailersArray;
+
+    public Movie(String imageLink, String filmTitle, double rating, int dbMovieId, String coverImage, String overView, String date)
+    {
         this.imageLink = imageLink;
         this.filmTitle = filmTitle;
         this.rating = rating;
@@ -120,6 +125,15 @@ public class Movie implements Parcelable
         return imageLink + " " + filmTitle + " " + getRating() + " " +dbMovieId + "  " + getImageLink() + " " + overView ;
     }
 
+    public Trailer[] getTrailersArray() {
+        return trailersArray;
+    }
+
+    public void setTrailersArray(Trailer[] trailersArray)
+    {
+        this.trailersArray = trailersArray;
+    }
+
     public static Creator<Movie> getCREATOR()
     {
         return CREATOR;
@@ -142,5 +156,16 @@ public class Movie implements Parcelable
             return new Movie[0];
         }
     };
+    public String[] getTrailersNameArray()
+    {
+        String []trailersNameArray = new String[trailersArray.length];
+        Log.d(TAG,trailersArray[0].getTrailerTitle());
+        Log.d(TAG,"LENGTH" + trailersArray.length+"");
+        for (int i = 0;i<trailersArray.length;i++)
+        {
+            trailersNameArray[i] = trailersArray[i].getTrailerTitle();
+        }
+        return trailersNameArray;
+    }
 
 }

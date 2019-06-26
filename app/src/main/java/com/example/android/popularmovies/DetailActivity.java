@@ -2,14 +2,20 @@ package com.example.android.popularmovies;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +41,7 @@ public class DetailActivity extends AppCompatActivity
     private TextView mDate;
     private TextView mRate;
     private TextView mOverView;
+    private Button playButtonImageView;
 
     private String trailerURL;
     @Override
@@ -43,18 +50,36 @@ public class DetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+
         //initializing the views
         mBackgroundImage = findViewById(R.id.background_image_id);
         mMovieTitleView = findViewById(R.id.movie_title_id);
         mRate = findViewById(R.id.rateing_id);
         mDate = findViewById(R.id.date_id);
         mOverView = findViewById(R.id.overview_id);
+        playButtonImageView = findViewById(R.id.trailer_button_id);
+
+        playButtonImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[0].getYoutubeTrailerKey());
+                Log.d(TAG,uri.toString());
+                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                if (intent.resolveActivity(getPackageManager()) != null)
+                {
+                    startActivity(intent);
+                }
+
+            }
+        });
 
 
 
         //check if there is a passed intent
         if (getIntent().hasExtra(Intent.EXTRA_INTENT))
         {
+
             mMovie = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
             Bundle args = new Bundle();
             args.putInt(TRAILER_KEY,mMovie.getDbMovieId());
@@ -73,7 +98,11 @@ public class DetailActivity extends AppCompatActivity
             //appending /10 to the String to make it looks like 8/10 etc
             mRate.append("/10");
         }
+
     }
+
+
+
 
     @NonNull
     @Override
@@ -111,7 +140,8 @@ public class DetailActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String data)
     {
-        JsonUtil.extractTrailerPath(data);
+        JsonUtil.extractTrailerPathAndAddTheTrailersToTheMovieObject(data,mMovie);
+        playButtonImageView.setClickable(true);
     }
 
     @Override

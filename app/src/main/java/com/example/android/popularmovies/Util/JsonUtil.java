@@ -3,6 +3,7 @@ package com.example.android.popularmovies.Util;
 
 
 import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.Model.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +23,12 @@ public class JsonUtil
     private static final String RELEASE_DATE = "release_date";
 
     private static final String TAG = JsonUtil.class.getName();
+
+    public static final String VIDEOS = "videos";
+    public static final String RESULTS = "results";
+    public static final String TRAILERS_KEY = "key";
+    public static final String TRAILER_NAME = "name";
+
     public static  List<Movie> extractMovieList(String json)
     {
 
@@ -58,12 +65,28 @@ public class JsonUtil
         return movie;
     }
 
-    public static String extractTrailerPath(String json)
+    public static String extractTrailerPathAndAddTheTrailersToTheMovieObject(String json, Movie movie)
     {
         try
         {
             JSONObject object = new JSONObject(json);
+            JSONObject videosExtractedJSON = object.getJSONObject(VIDEOS);
+            JSONArray trailersArray = videosExtractedJSON.getJSONArray(RESULTS);
+            Trailer trailersArrayExtracted[] = new Trailer[trailersArray.length()];
 
+            for (int x = 0;x<trailersArray.length();x++)
+            {
+                Trailer trailer = new Trailer();
+                trailer.setTrailerTitle(trailersArray.getJSONObject(x).getString(TRAILER_NAME));
+                trailer.setYoutubeTrailerKey(trailersArray.getJSONObject(x).getString(TRAILERS_KEY));
+                trailersArrayExtracted[x]= trailer;
+                if (x == 4)
+                {
+                    //to set the limit for 4 trailers for those movies which have more than 4 trailers
+                    break;
+                }
+            }
+            movie.setTrailersArray(trailersArrayExtracted);
         }
         catch (JSONException e)
         {

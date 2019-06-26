@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             try
             {
                 jsonOutput = NetworkingUtil.getResponseFromHttpUrlUsingScanner(urls[0]);
+                Log.d(TAG,jsonOutput);
             }
             catch (IOException e)
             {
