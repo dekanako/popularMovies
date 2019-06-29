@@ -72,7 +72,20 @@ public class JsonUtil
             JSONObject object = new JSONObject(json);
             JSONObject videosExtractedJSON = object.getJSONObject(VIDEOS);
             JSONArray trailersArray = videosExtractedJSON.getJSONArray(RESULTS);
-            Trailer trailersArrayExtracted[] = new Trailer[5];
+            //check if the trailer has 5 or less trailers to know how to set the trailers
+            Trailer trailersArrayExtracted[];
+            //if it was less than 5 trailers we crate the array corresponding to the size of the json
+            if (trailersArray.length() < 5)
+            {
+
+                 trailersArrayExtracted = new Trailer[trailersArray.length()];
+            }
+            //else if it was more than 5 we compulsry make it 5
+            else
+            {
+                trailersArrayExtracted = new Trailer[5];
+            }
+
 
             for (int x = 0;x<trailersArray.length();x++)
             {

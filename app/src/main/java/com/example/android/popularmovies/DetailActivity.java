@@ -43,9 +43,7 @@ public class DetailActivity extends AppCompatActivity
     private TextView mDate;
     private TextView mRate;
     private TextView mOverView;
-    private Button playButtonImageView;
-
-    private String trailerURL;
+    private ImageView playButtonImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -59,7 +57,7 @@ public class DetailActivity extends AppCompatActivity
         mRate = findViewById(R.id.rateing_id);
         mDate = findViewById(R.id.date_id);
         mOverView = findViewById(R.id.overview_id);
-        playButtonImageView = findViewById(R.id.trailer_button_id);
+        playButtonImageView = findViewById(R.id.play_trailer_youtube_button);
 
         playButtonImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,14 +89,7 @@ public class DetailActivity extends AppCompatActivity
                         }
                     });
                     builderSingle.show();
-//
-//                    Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[0].getYoutubeTrailerKey());
-//                    Log.d(TAG,uri.toString());
-//                    Intent intent = new Intent(Intent.ACTION_VIEW,uri);
-//                    if (intent.resolveActivity(getPackageManager()) != null)
-//                    {
-//                        startActivity(intent);
-//                    }
+
                 }
                 else
                 {
