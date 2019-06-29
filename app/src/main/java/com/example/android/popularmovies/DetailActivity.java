@@ -28,9 +28,6 @@ import com.example.android.popularmovies.Util.NetworkingUtil;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class DetailActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<String>
@@ -71,13 +68,37 @@ public class DetailActivity extends AppCompatActivity
                 if (mMovie.getTrailersArray().length>0)
                 {
 
-                    Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[0].getYoutubeTrailerKey());
-                    Log.d(TAG,uri.toString());
-                    Intent intent = new Intent(Intent.ACTION_VIEW,uri);
-                    if (intent.resolveActivity(getPackageManager()) != null)
-                    {
-                        startActivity(intent);
-                    }
+                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(v.getContext());
+                    builderSingle.setTitle("Trailers");
+
+
+                    builderSingle.setItems(mMovie.getTrailersNameArray(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[which].getYoutubeTrailerKey());
+                            Log.d(TAG,uri.toString());
+                            Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                            if (intent.resolveActivity(getPackageManager()) != null)
+                            {
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                    builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builderSingle.show();
+//
+//                    Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[0].getYoutubeTrailerKey());
+//                    Log.d(TAG,uri.toString());
+//                    Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+//                    if (intent.resolveActivity(getPackageManager()) != null)
+//                    {
+//                        startActivity(intent);
+//                    }
                 }
                 else
                 {
