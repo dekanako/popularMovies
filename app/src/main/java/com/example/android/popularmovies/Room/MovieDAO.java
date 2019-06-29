@@ -6,6 +6,7 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -17,5 +18,12 @@ public interface MovieDAO
 
   @Insert
   void insertMovie(Movie movie);
+
+  @Query("SELECT * FROM movie WHERE dbMovieId = :passedId")
+  Movie getMovie(int passedId);
+
+  @Delete
+  void deleteMovieFromFavourites(Movie movie);
+
 
 }

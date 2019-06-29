@@ -26,6 +26,7 @@ import com.example.android.popularmovies.Model.Movie;
 import com.example.android.popularmovies.Room.AppDBRoom;
 import com.example.android.popularmovies.Util.JsonUtil;
 import com.example.android.popularmovies.Util.NetworkingUtil;
+import com.facebook.stetho.Stetho;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,7 +36,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener
 {
-
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private List<Movie> mMovies;
@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Stetho.initializeWithDefaults(this);
+
         doWeNeedToQuery = true;
         mOopsView = findViewById(R.id.ops_id);
         mRecyclerView = findViewById(R.id.recycle_view_id);
