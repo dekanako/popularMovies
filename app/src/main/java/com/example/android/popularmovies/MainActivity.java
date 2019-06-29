@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         {
             mRecyclerView.setVisibility(View.INVISIBLE);
             mProgressBar.setVisibility(View.VISIBLE);
+            //ay la  bam
         }
 
         @Override
