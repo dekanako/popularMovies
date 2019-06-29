@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +23,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.Room.AppDBRoom;
 import com.example.android.popularmovies.Util.JsonUtil;
 import com.example.android.popularmovies.Util.NetworkingUtil;
 
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private ProgressBar mProgressBar;
     private static final String TAG = MainActivity.class.getName();
     private static final String BUNDLE_KEY = "moviesList";
+    private AppDBRoom appDBRoom;
 
     //is used to indicate if we want to fetch the items or we have it already frome the onSavedInstanceStateBundle
     boolean doWeNeedToQuery = true;
@@ -118,13 +121,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (isInternetConnection() && doWeNeedToQuery)
         {
             Log.d(TAG,"QUERYING");
-            if (QueryPreferences.getStoredTypeOfQuery(this).equals(getResources().getString(R.string.popular)))
+            if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.popular)))
             {
                 new MoviesAsyncTask().execute(NetworkingUtil.buildURLForListOfPopularMovies(1));
             }
-            else
+            else if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.top_rated)))
             {
                 new MoviesAsyncTask().execute(NetworkingUtil.buildURLForListOfTopRatedMovies(1));
+            }
+            else if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.favourites)))
+            {
+                appDBRoom = AppDBRoom.getInstance(this);
+                appDBRoom.dao().getAllMovie().observe(this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies)
+                    {
+                        showTheReceivedList(movies);
+                    }
+                });
             }
         }
 
@@ -137,16 +151,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         TextView textView = (TextView)view;
         if ( textView.getText().equals(getResources().getString(R.string.popular)))
         {
-            QueryBasedOnWhat(R.string.popular);
+            queryBasedOnWhat(R.string.popular);
         }
         else if (textView.getText().equals(getResources().getString(R.string.top_rated)))
         {
-            QueryBasedOnWhat(R.string.top_rated);
+            queryBasedOnWhat(R.string.top_rated);
         }
+        else if (textView.getText().equals(getString(R.string.favourites)))
+        {
+            queryBasedOnWhat(R.string.favourites);
+        }
+
         doWeNeedToQuery = true;
     }
 
-    private void QueryBasedOnWhat(int p)
+    private void queryBasedOnWhat(int p)
     {
         QueryPreferences.setStoredTypeOfQuery(this, getResources().getString(p));
         queryForWhat();
@@ -187,14 +206,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         protected void onPostExecute(List<Movie> movies)
         {
-            mProgressBar.setVisibility(View.INVISIBLE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mMovies = new ArrayList<>();
-            mMovies.addAll(movies);
-            mMovieAdapter = new MovieAdapter(mMovies,getBaseContext());
-            mRecyclerView.setAdapter(mMovieAdapter);
+            showTheReceivedList(movies);
 
         }
+    }
+
+    private void showTheReceivedList(List<Movie> movies) {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mMovies = new ArrayList<>();
+        mMovies.addAll(movies);
+        mMovieAdapter = new MovieAdapter(mMovies,getBaseContext());
+        mRecyclerView.setAdapter(mMovieAdapter);
     }
 
     @Override
@@ -220,9 +243,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         {
             spinner.setSelection(0);
         }
-        else
+        else if(mSelectedQuery.equals(getResources().getString(R.string.top_rated)))
         {
             spinner.setSelection(1);
+        }
+        else if(mSelectedQuery.equals(getResources().getString(R.string.favourites)))
+        {
+            spinner.setSelection(2);
         }
 
         return true;

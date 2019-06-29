@@ -8,21 +8,22 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
 
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.Room.AppDBRoom;
 import com.example.android.popularmovies.Util.JsonUtil;
 import com.example.android.popularmovies.Util.NetworkingUtil;
 
@@ -44,12 +45,15 @@ public class DetailActivity extends AppCompatActivity
     private TextView mRate;
     private TextView mOverView;
     private ImageView playButtonImageView;
+
+    private AppDBRoom appDBRoom;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        appDBRoom = AppDBRoom.getInstance(getApplicationContext());
 
         //initializing the views
         mBackgroundImage = findViewById(R.id.background_image_id);
@@ -129,6 +133,20 @@ public class DetailActivity extends AppCompatActivity
     {
         getMenuInflater().inflate(R.menu.detail_activity_menu,menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.favourite_id:
+                Movie movie = new Movie(mMovie.getImageLink(),mMovie.getFilmTitle(),mMovie.getRating(),mMovie.getDbMovieId(),mMovie.getCoverImage(),mMovie.getOverView(),mMovie.getDate());
+                appDBRoom.dao().insertMovie(movie);
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @NonNull

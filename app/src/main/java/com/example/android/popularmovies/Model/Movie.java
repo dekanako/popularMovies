@@ -5,19 +5,24 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
+@Entity(tableName = "movie")
 public class Movie implements Parcelable
 {
     public static final String TAG = Movie.class.getName();
     private String imageLink;
     private String filmTitle;
     private double rating;
+    @PrimaryKey
     private int dbMovieId;
 
     private String coverImage;
     private String overView;
     private String date;
-
+    @Ignore
     private Trailer[] trailersArray;
 
     public Movie(String imageLink, String filmTitle, double rating, int dbMovieId, String coverImage, String overView, String date)
@@ -30,7 +35,7 @@ public class Movie implements Parcelable
         this.overView = overView;
         this.date = date;
     }
-
+    @Ignore
     private Movie(Parcel p)
     {
 
@@ -42,7 +47,6 @@ public class Movie implements Parcelable
         coverImage = p.readString();
         overView = p.readString();
         date = p.readString();
-
     }
 
     @Override
@@ -156,6 +160,7 @@ public class Movie implements Parcelable
             return new Movie[0];
         }
     };
+
     public String[] getTrailersNameArray()
     {
         String []trailersNameArray = new String[trailersArray.length];
