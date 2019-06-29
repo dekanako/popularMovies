@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
         queryForWhat();
-
-
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)
@@ -110,8 +108,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             }
         });
-       // mRecyclerView.setAdapter(mMovieAdapter);
-
     }
 
     //TODO fix the detail activity overview textView
@@ -122,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (isInternetConnection() && doWeNeedToQuery)
         {
             Log.d(TAG,"QUERYING");
-            if (QueryPrefences.getStoredTypeOfQuery(this).equals(getResources().getString(R.string.popular)))
+            if (QueryPreferences.getStoredTypeOfQuery(this).equals(getResources().getString(R.string.popular)))
             {
                 new MoviesAsyncTask().execute(NetworkingUtil.buildURLForListOfPopularMovies(1));
             }
@@ -152,14 +148,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void QueryBasedOnWhat(int p)
     {
-        QueryPrefences.setStoredTypeOfQuery(this, getResources().getString(p));
+        QueryPreferences.setStoredTypeOfQuery(this, getResources().getString(p));
         queryForWhat();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent)
     {
-       QueryPrefences.getStoredTypeOfQuery(this);
+        QueryPreferences.getStoredTypeOfQuery(this);
     }
 
     private class MoviesAsyncTask extends AsyncTask<URL,Void, List<Movie>>
@@ -209,7 +205,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Spinner spinner = (Spinner) menu.findItem(R.id.spinner).getActionView(); // find the spinner
         if (PreferenceManager.getDefaultSharedPreferences(this).contains("QUERY"))
         {
-           mSelectedQuery =  QueryPrefences.getStoredTypeOfQuery(this);
+           mSelectedQuery =  QueryPreferences.getStoredTypeOfQuery(this);
+        }
+        else
+        {
+            //set the query sort type to popular because its the first time we launch the app
+            mSelectedQuery = getString(R.string.popular);
         }
         SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.query_array, R.layout.spinner_item); //  create the adapter from a StringArray
         spinner.setAdapter(mSpinnerAdapter); // set the adapter

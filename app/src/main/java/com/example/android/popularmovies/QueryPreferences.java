@@ -3,7 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-public class QueryPrefences
+public class QueryPreferences
 {
     private static final String QUERY_KEY = "QUERY";
     public static void setStoredTypeOfQuery(Context context,String passsedValue)

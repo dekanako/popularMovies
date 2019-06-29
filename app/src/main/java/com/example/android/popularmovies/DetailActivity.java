@@ -14,10 +14,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.Model.Movie;
@@ -26,6 +28,9 @@ import com.example.android.popularmovies.Util.NetworkingUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<String>
@@ -63,18 +68,23 @@ public class DetailActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[0].getYoutubeTrailerKey());
-                Log.d(TAG,uri.toString());
-                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
-                if (intent.resolveActivity(getPackageManager()) != null)
+                if (mMovie.getTrailersArray().length>0)
                 {
-                    startActivity(intent);
-                }
 
+                    Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[0].getYoutubeTrailerKey());
+                    Log.d(TAG,uri.toString());
+                    Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                    if (intent.resolveActivity(getPackageManager()) != null)
+                    {
+                        startActivity(intent);
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getBaseContext(),"This movie doesn't has a trailer",Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-
 
         //check if there is a passed intent
         if (getIntent().hasExtra(Intent.EXTRA_INTENT))
@@ -102,7 +112,12 @@ public class DetailActivity extends AppCompatActivity
     }
 
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.detail_activity_menu,menu);
+        return true;
+    }
 
     @NonNull
     @Override
