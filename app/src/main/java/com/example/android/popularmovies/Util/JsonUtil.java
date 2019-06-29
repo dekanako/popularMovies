@@ -72,7 +72,7 @@ public class JsonUtil
             JSONObject object = new JSONObject(json);
             JSONObject videosExtractedJSON = object.getJSONObject(VIDEOS);
             JSONArray trailersArray = videosExtractedJSON.getJSONArray(RESULTS);
-            Trailer trailersArrayExtracted[] = new Trailer[trailersArray.length()];
+            Trailer trailersArrayExtracted[] = new Trailer[5];
 
             for (int x = 0;x<trailersArray.length();x++)
             {
@@ -82,9 +82,10 @@ public class JsonUtil
                 trailersArrayExtracted[x]= trailer;
                 if (x == 4)
                 {
-                    //to set the limit for 4 trailers for those movies which have more than 4 trailers
+                    //to set the limit for 5 trailers for those movies which have more than 5 trailers
                     break;
                 }
+
             }
             movie.setTrailersArray(trailersArrayExtracted);
         }

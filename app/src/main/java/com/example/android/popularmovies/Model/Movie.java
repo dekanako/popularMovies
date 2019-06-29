@@ -159,11 +159,10 @@ public class Movie implements Parcelable
     public String[] getTrailersNameArray()
     {
         String []trailersNameArray = new String[trailersArray.length];
-        Log.d(TAG,trailersArray[0].getTrailerTitle());
-        Log.d(TAG,"LENGTH" + trailersArray.length+"");
         for (int i = 0;i<trailersArray.length;i++)
         {
             trailersNameArray[i] = trailersArray[i].getTrailerTitle();
+
         }
         return trailersNameArray;
     }
