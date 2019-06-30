@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -57,15 +56,8 @@ public class MainActivity extends AppCompatActivity
     private AppDBRoom appDBRoom;
 
     //is used to indicate if we want to fetch the items or we have it already frome the onSavedInstanceStateBundle
-    boolean doWeNeedToQuery = true;
+    private boolean doWeNeedToQuery = true;
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle savedInstanceState)
-    {
-        super.onSaveInstanceState(savedInstanceState);
-        Log.i(TAG, "onSaveInstanceState");
-        //savedInstanceState.putParcelableArrayList(BUNDLE_KEY, (ArrayList)mMovies);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,103 +65,47 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Stetho.initializeWithDefaults(this);
-
-        doWeNeedToQuery = true;
         mOopsView = findViewById(R.id.ops_id);
         mRecyclerView = findViewById(R.id.recycle_view_id);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mProgressBar = findViewById(R.id.progressBar);
         mRecyclerView.setHasFixedSize(true);
 
+
         queryForWhat();
-        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)
-            {
-                int position = parent.getChildAdapterPosition(view); // item position
-                int spanCount = 2;
-                int spacing = 10;//spacing between views in grid
-
-                if (position >= 0)
-                {
-                    int column = position % spanCount; // item column
-
-                    outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-                    outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
-                    if (position < spanCount)
-                    { // top edge
-                        outRect.top = spacing;
-                    }
-                    outRect.bottom = spacing; // item bottom
-                }
-                else
-                {
-                    outRect.left = 0;
-                    outRect.right = 0;
-                    outRect.top = 0;
-                    outRect.bottom = 0;
-                }
-            }
-        });
+        adjustRecyclerView();
     }
 
-    //TODO fix the detail activity overview textView
-    //TODO fix the onSaveInstanceState
+
+    private void initQueries(int p)
+    {
+        Bundle bundle = new Bundle();
+        if (getString(p).equals(getString(R.string.popular)))
+        {
+            bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfPopularMovies(1).toString());
+            chooseLoaderAndStartLoading(POPULAR_LOADER_ID,bundle);
+        }
+        else if (getString(p).equals(getString(R.string.top_rated)))
+        {
+            bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfTopRatedMovies(1).toString());
+            chooseLoaderAndStartLoading(TOP_RATED_LOADER_ID,bundle);
+        }
+
+
+    }
+    private void chooseLoaderAndStartLoading(int passedLoaderKey, Bundle args)
+    {
+        getSupportLoaderManager().initLoader(passedLoaderKey,args,this);
+    }
 
     private void queryForWhat()
     {
-        if (isInternetConnection() && doWeNeedToQuery)
-        {
-            Bundle bundle = new Bundle();
-
-            if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.popular)))
-            {
-                bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfPopularMovies(1).toString());
-
-                if (getSupportLoaderManager().getLoader(POPULAR_LOADER_ID) == null&&getSupportLoaderManager().getLoader(TOP_RATED_LOADER_ID)==null)
-                {
-                    getSupportLoaderManager().initLoader(POPULAR_LOADER_ID,bundle,this);
-                }
-                else if(getSupportLoaderManager().getLoader(TOP_RATED_LOADER_ID)!= null)
-                {
-                    getSupportLoaderManager().restartLoader(POPULAR_LOADER_ID,bundle,this);
-                }
-            }
-
-            else if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.top_rated)))
-            {
-                bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfTopRatedMovies(1).toString());
-
-                if (getSupportLoaderManager().getLoader(POPULAR_LOADER_ID) == null&&getSupportLoaderManager().getLoader(TOP_RATED_LOADER_ID)==null)
-                {
-                    getSupportLoaderManager().initLoader(TOP_RATED_LOADER_ID,bundle,this);
-                }
-                else if(getSupportLoaderManager().getLoader(POPULAR_LOADER_ID)!= null)
-                {
-                    getSupportLoaderManager().restartLoader(TOP_RATED_LOADER_ID,bundle,this);
-                }
-
-            }
-            else if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.favourites)))
-            {
-                appDBRoom = AppDBRoom.getInstance(this);
-                appDBRoom.dao().getAllMovie().observe(this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies)
-                    {
-                        showTheReceivedList(movies);
-                    }
-                });
-            }
-        }
 
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
     {
-
         TextView textView = (TextView)view;
         if ( textView.getText().equals(getResources().getString(R.string.popular)))
         {
@@ -183,14 +119,12 @@ public class MainActivity extends AppCompatActivity
         {
             queryBasedOnWhat(R.string.favourites);
         }
-
-        doWeNeedToQuery = true;
     }
 
     private void queryBasedOnWhat(int p)
     {
         QueryPreferences.setStoredTypeOfQuery(this, getResources().getString(p));
-        queryForWhat();
+        initQueries(p);
     }
 
     @Override
@@ -263,14 +197,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-     private void showTheReceivedList(List<Movie> movies) {
-        mProgressBar.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-        mMovies = new ArrayList<>();
-        mMovies.addAll(movies);
-        mMovieAdapter = new MovieAdapter(mMovies,getBaseContext());
-        mRecyclerView.setAdapter(mMovieAdapter);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -308,9 +234,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    public  boolean isInternetConnection()
+    private void showTheReceivedList(List<Movie> movies)
     {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mMovies = new ArrayList<>();
+        mMovies.addAll(movies);
+        mMovieAdapter = new MovieAdapter(mMovies,getBaseContext());
+        mRecyclerView.setAdapter(mMovieAdapter);
+    }
+
+    public  boolean isInternetConnection() {
 
         ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getActiveNetworkInfo() == null )
@@ -323,10 +257,40 @@ public class MainActivity extends AppCompatActivity
         {
             mOopsView.setVisibility(View.INVISIBLE);
             mRecyclerView.setVisibility(View.VISIBLE);
-
             return true;
         }
 
     }
+    private void adjustRecyclerView() {
+        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)
+            {
+                int position = parent.getChildAdapterPosition(view); // item position
+                int spanCount = 2;
+                int spacing = 10;//spacing between views in grid
 
+                if (position >= 0)
+                {
+                    int column = position % spanCount; // item column
+
+                    outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                    outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                    if (position < spanCount)
+                    { // top edge
+                        outRect.top = spacing;
+                    }
+                    outRect.bottom = spacing; // item bottom
+                }
+                else
+                {
+                    outRect.left = 0;
+                    outRect.right = 0;
+                    outRect.top = 0;
+                    outRect.bottom = 0;
+                }
+            }
+        });
+    }
 }

@@ -53,7 +53,7 @@ public class NetworkingUtil
                 .appendQueryParameter(PAGE,String.valueOf(page))
                 .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
                 .build();
-        Log.d(TAG,movieUri.toString());
+
         try
         {
             return new URL(movieUri.toString());
