@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
 {
     public static final int POPULAR_LOADER_ID = 123;
     public static final int TOP_RATED_LOADER_ID = 352;
+    private static final int FAVOURITES_LOADER_ID = 254;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private List<Movie> mMovies;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private static final String TAG = MainActivity.class.getName();
     private static final String BUNDLE_KEY = "moviesList";
-    private AppDBRoom appDBRoom;
+    private AppDBRoom mAppDBRoom;
 
     //is used to indicate if we want to fetch the items or we have it already frome the onSavedInstanceStateBundle
     private boolean doWeNeedToQuery = true;
@@ -71,8 +72,6 @@ public class MainActivity extends AppCompatActivity
         mProgressBar = findViewById(R.id.progressBar);
         mRecyclerView.setHasFixedSize(true);
 
-
-        queryForWhat();
         adjustRecyclerView();
     }
 
@@ -90,18 +89,40 @@ public class MainActivity extends AppCompatActivity
             bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfTopRatedMovies(1).toString());
             chooseLoaderAndStartLoading(TOP_RATED_LOADER_ID,bundle);
         }
+        else if (getString(p).equals(getString(R.string.favourites)))
+        {
+            mAppDBRoom = AppDBRoom.getInstance(this);
+            mAppDBRoom.dao().getAllMovie().observe(this, new Observer<List<Movie>>() {
+                @Override
+                public void onChanged(List<Movie> movies)
+                {
+                    //We add this block of checking because when the observer is triggered the result will be set on the favourite whenever the selected query was
+                    if (!QueryPreferences.getStoredTypeOfQuery(getBaseContext()).equals(getString(R.string.popular)))
+                    {
+                        if (!QueryPreferences.getStoredTypeOfQuery(getBaseContext()).equals(getString(R.string.top_rated)))
+                        {
+                            showTheReceivedList(movies);
+                        }
+
+                    }
+
+                }
+            });
+
+        }
 
 
     }
     private void chooseLoaderAndStartLoading(int passedLoaderKey, Bundle args)
     {
-        getSupportLoaderManager().initLoader(passedLoaderKey,args,this);
+        if (isInternetConnection())
+        {
+            getSupportLoaderManager().initLoader(passedLoaderKey,args,this);
+        }
+
     }
 
-    private void queryForWhat()
-    {
 
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
@@ -172,16 +193,27 @@ public class MainActivity extends AppCompatActivity
                 String jsonOutput = null;
                 try
                 {
-                    urls = args.getString(Intent.EXTRA_INTENT,null);
-                    Log.d(TAG,urls);
-                    jsonOutput = NetworkingUtil.getResponseFromHttpUrlUsingScanner(new URL(urls));
-                    Log.d(TAG,jsonOutput);
+
+                    if (args!= null)
+                    {
+                        urls = args.getString(Intent.EXTRA_INTENT,null);
+                        jsonOutput = NetworkingUtil.getResponseFromHttpUrlUsingScanner(new URL(urls));
+                        return JsonUtil.extractMovieList(jsonOutput);
+                    }
+                    else
+                    {
+                        mAppDBRoom = AppDBRoom.getInstance(getBaseContext());
+                        return null;
+
+                    }
+
+
                 }
                 catch (IOException e)
                 {
                     e.printStackTrace();
                 }
-                return JsonUtil.extractMovieList(jsonOutput);
+                return null;
             }
         };
     }
@@ -189,7 +221,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(@NonNull Loader<List<Movie>> loader, List<Movie> data)
     {
-        showTheReceivedList(data);
+        if (data == null)
+        {
+            showTheReceivedList(data);
+        }else
+        {
+            showTheReceivedList(data);
+        }
+
     }
 
     @Override
