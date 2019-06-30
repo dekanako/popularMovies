@@ -129,6 +129,7 @@ public class NetworkingUtil
 
     public static String getResponseFromHttpUrlUsingScanner(URL url) throws IOException
     {
+        Log.d(TAG,"NETWORK CALL");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try
         {

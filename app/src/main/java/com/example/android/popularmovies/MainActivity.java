@@ -1,12 +1,18 @@
 package com.example.android.popularmovies;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -34,8 +40,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener
+public class MainActivity extends AppCompatActivity
+        implements AdapterView.OnItemSelectedListener, LoaderManager.LoaderCallbacks<List<Movie>>
+
 {
+    public static final int POPULAR_LOADER_ID = 123;
+    public static final int TOP_RATED_LOADER_ID = 352;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private List<Movie> mMovies;
@@ -50,11 +60,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     boolean doWeNeedToQuery = true;
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState)
     {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
-        savedInstanceState.putParcelableArrayList(BUNDLE_KEY, (ArrayList)mMovies);
+        //savedInstanceState.putParcelableArrayList(BUNDLE_KEY, (ArrayList)mMovies);
     }
 
     @Override
@@ -71,17 +81,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mProgressBar = findViewById(R.id.progressBar);
         mRecyclerView.setHasFixedSize(true);
 
-        if (savedInstanceState != null)
-        {
-            if (savedInstanceState.containsKey(BUNDLE_KEY))
-            {
-
-                doWeNeedToQuery = false;
-                mMovies = savedInstanceState.getParcelableArrayList(BUNDLE_KEY);
-                mMovieAdapter = new MovieAdapter(mMovies,this);
-                mRecyclerView.setAdapter(mMovieAdapter);
-            }
-        }
         queryForWhat();
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -122,14 +121,35 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         if (isInternetConnection() && doWeNeedToQuery)
         {
-            Log.d(TAG,"QUERYING");
+            Bundle bundle = new Bundle();
+
             if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.popular)))
             {
-                new MoviesAsyncTask().execute(NetworkingUtil.buildURLForListOfPopularMovies(1));
+                bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfPopularMovies(1).toString());
+
+                if (getSupportLoaderManager().getLoader(POPULAR_LOADER_ID) == null&&getSupportLoaderManager().getLoader(TOP_RATED_LOADER_ID)==null)
+                {
+                    getSupportLoaderManager().initLoader(POPULAR_LOADER_ID,bundle,this);
+                }
+                else if(getSupportLoaderManager().getLoader(TOP_RATED_LOADER_ID)!= null)
+                {
+                    getSupportLoaderManager().restartLoader(POPULAR_LOADER_ID,bundle,this);
+                }
             }
+
             else if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.top_rated)))
             {
-                new MoviesAsyncTask().execute(NetworkingUtil.buildURLForListOfTopRatedMovies(1));
+                bundle.putString(Intent.EXTRA_INTENT,NetworkingUtil.buildURLForListOfTopRatedMovies(1).toString());
+
+                if (getSupportLoaderManager().getLoader(POPULAR_LOADER_ID) == null&&getSupportLoaderManager().getLoader(TOP_RATED_LOADER_ID)==null)
+                {
+                    getSupportLoaderManager().initLoader(TOP_RATED_LOADER_ID,bundle,this);
+                }
+                else if(getSupportLoaderManager().getLoader(POPULAR_LOADER_ID)!= null)
+                {
+                    getSupportLoaderManager().restartLoader(TOP_RATED_LOADER_ID,bundle,this);
+                }
+
             }
             else if (QueryPreferences.getStoredTypeOfQuery(this).equals(getString(R.string.favourites)))
             {
@@ -179,41 +199,71 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         QueryPreferences.getStoredTypeOfQuery(this);
     }
 
-    private class MoviesAsyncTask extends AsyncTask<URL,Void, List<Movie>>
+    @NonNull
+    @Override
+    public Loader<List<Movie>> onCreateLoader(int id, @Nullable final Bundle args)
     {
-        @Override
-        protected void onPreExecute()
-        {
-            mRecyclerView.setVisibility(View.INVISIBLE);
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
 
-        @Override
-        protected List<Movie> doInBackground(URL... urls)
+        return new AsyncTaskLoader<List<Movie>>(this)
         {
-            String jsonOutput = null;
+            private List<Movie> mResult;
 
-            try
+            @Override
+            protected void onStartLoading()
             {
-                jsonOutput = NetworkingUtil.getResponseFromHttpUrlUsingScanner(urls[0]);
-                Log.d(TAG,jsonOutput);
+                if (mResult != null)
+                {
+                    deliverResult(mResult);
+                }
+                else
+                {
+                    mRecyclerView.setVisibility(View.INVISIBLE);
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    forceLoad();
+                }
             }
-            catch (IOException e)
+
+            @Override
+            public void deliverResult(@Nullable List<Movie> data) {
+                mResult = data;
+                super.deliverResult(data);
+            }
+
+
+            String urls;
+            @Nullable
+            @Override
+            public List<Movie> loadInBackground()
             {
-                e.printStackTrace();
+                String jsonOutput = null;
+                try
+                {
+                    urls = args.getString(Intent.EXTRA_INTENT,null);
+                    Log.d(TAG,urls);
+                    jsonOutput = NetworkingUtil.getResponseFromHttpUrlUsingScanner(new URL(urls));
+                    Log.d(TAG,jsonOutput);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                return JsonUtil.extractMovieList(jsonOutput);
             }
-            return JsonUtil.extractMovieList(jsonOutput);
-        }
-
-        @Override
-        protected void onPostExecute(List<Movie> movies)
-        {
-            showTheReceivedList(movies);
-
-        }
+        };
     }
 
-    private void showTheReceivedList(List<Movie> movies) {
+    @Override
+    public void onLoadFinished(@NonNull Loader<List<Movie>> loader, List<Movie> data)
+    {
+        showTheReceivedList(data);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<List<Movie>> loader) {
+
+    }
+
+     private void showTheReceivedList(List<Movie> movies) {
         mProgressBar.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
         mMovies = new ArrayList<>();
@@ -278,29 +328,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
     }
-      /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-    {
-        @Override
-        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-        super.onScrollStateChanged(recyclerView, newState);
-    }
 
-        @Override
-        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
-        {
-            super.onScrolled(recyclerView, dx, dy);
-            GridLayoutManager gridLayout =(GridLayoutManager) recyclerView.getLayoutManager();
-            if (mMovies != null)
-                if (!isLoading)
-                {
-                    if (gridLayout != null && gridLayout.findLastCompletelyVisibleItemPosition()+1== mMovies.size())
-                    {
-                        mMovies.add(null);
-                        mMovieAdapter.notifyItemInserted(mMovies.size()-1);
-                        isLoading = true;
-                    }
-                }
-
-        }
-    });*/
 }
