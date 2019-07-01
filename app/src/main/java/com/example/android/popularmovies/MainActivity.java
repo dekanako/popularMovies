@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
 {
     public static final int POPULAR_LOADER_ID = 123;
     public static final int TOP_RATED_LOADER_ID = 352;
-    private static final int FAVOURITES_LOADER_ID = 254;
+
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private List<Movie> mMovies;
@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity
     private TextView mOopsView;
     private ProgressBar mProgressBar;
     private static final String TAG = MainActivity.class.getName();
-    private static final String BUNDLE_KEY = "moviesList";
+
     private AppDBRoom mAppDBRoom;
 
     //is used to indicate if we want to fetch the items or we have it already frome the onSavedInstanceStateBundle
-    private boolean doWeNeedToQuery = true;
+
 
 
     @Override
@@ -68,11 +68,41 @@ public class MainActivity extends AppCompatActivity
         Stetho.initializeWithDefaults(this);
         mOopsView = findViewById(R.id.ops_id);
         mRecyclerView = findViewById(R.id.recycle_view_id);
+
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mProgressBar = findViewById(R.id.progressBar);
+        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)
+            {
+                int position = parent.getChildAdapterPosition(view); // item position
+                int spanCount = 2;
+                int spacing = 1;//spacing between views in grid
+
+                if (position >= 0)
+                {
+                    int column = position % spanCount; // item column
+
+                    outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                    outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                    if (position < spanCount)
+                    { // top edge
+                        outRect.top = spacing;
+                    }
+                    outRect.bottom = spacing; // item bottom
+                }
+                else
+                {
+                    outRect.left = 0;
+                    outRect.right = 0;
+                    outRect.top = 0;
+                    outRect.bottom = 0;
+                }
+            }
+        });
         mRecyclerView.setHasFixedSize(true);
 
-        //adjustRecyclerView();
     }
 
 
@@ -300,36 +330,7 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-    private void adjustRecyclerView() {
-        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)
-            {
-                int position = parent.getChildAdapterPosition(view); // item position
-                int spanCount = 2;
-                int spacing = 10;//spacing between views in grid
 
-                if (position >= 0)
-                {
-                    int column = position % spanCount; // item column
 
-                    outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-                    outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
 
-                    if (position < spanCount)
-                    { // top edge
-                        outRect.top = spacing;
-                    }
-                    outRect.bottom = spacing; // item bottom
-                }
-                else
-                {
-                    outRect.left = 0;
-                    outRect.right = 0;
-                    outRect.top = 0;
-                    outRect.bottom = 0;
-                }
-            }
-        });
-    }
 }
