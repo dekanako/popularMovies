@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         mProgressBar = findViewById(R.id.progressBar);
         mRecyclerView.setHasFixedSize(true);
 
-        adjustRecyclerView();
+        //adjustRecyclerView();
     }
 
 

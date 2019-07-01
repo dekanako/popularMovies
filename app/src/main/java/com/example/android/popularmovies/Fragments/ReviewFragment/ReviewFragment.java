@@ -2,9 +2,11 @@ package com.example.android.popularmovies.Fragments.ReviewFragment;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.android.popularmovies.Model.Review;
 import com.example.android.popularmovies.R;
@@ -28,11 +30,13 @@ public class ReviewFragment extends Fragment
     private int mMovieID;
     private RecyclerView mRecyclerView;
     private ReviewAdapter mReviewAdapter;
+    private ProgressBar mProgressBar;
     public static Fragment newInstance(int movieId)
     {
         Bundle args = new Bundle();
         args.putInt(MOVIE_REVIEW_BUNDLE_KEY,movieId);
         ReviewFragment fragment = new ReviewFragment();
+        fragment.setRetainInstance(true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -42,8 +46,8 @@ public class ReviewFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         mMovieID = getArguments().getInt(MOVIE_REVIEW_BUNDLE_KEY);
-        new ReviewsAsyncTask().execute(mMovieID);
-        setRetainInstance(true);
+
+
 
     }
 
@@ -54,11 +58,19 @@ public class ReviewFragment extends Fragment
         View  view = inflater.inflate(R.layout.review_fragment,container,false);
         mRecyclerView = view.findViewById(R.id.reviews_recycler_view_id);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        mProgressBar = view.findViewById(R.id.progressBar2);
+        new ReviewsAsyncTask().execute(mMovieID);
         return view;
     }
     private class ReviewsAsyncTask extends AsyncTask<Integer,Void, List<Review>>
     {
+
+        @Override
+        protected void onPreExecute()
+        {
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected List<Review> doInBackground(Integer... integers)
@@ -78,8 +90,12 @@ public class ReviewFragment extends Fragment
         @Override
         protected void onPostExecute(List<Review> reviews)
         {
+
             mReviewAdapter = new ReviewAdapter(reviews);
             mRecyclerView.setAdapter(mReviewAdapter);
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+
         }
     }
 }

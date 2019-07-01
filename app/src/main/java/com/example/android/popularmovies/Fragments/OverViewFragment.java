@@ -39,6 +39,7 @@ public class OverViewFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         mPassedMovie = getArguments().getParcelable(MOVIE_BUNDLE_KEY);
+        setRetainInstance(true);
     }
 
     @Nullable
