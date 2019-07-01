@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +36,7 @@ public class OverViewFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.dummy_layout_test,container,false);
+        View view = inflater.inflate(R.layout.over_view_fragment,container,false);
         TextView overViewTextView = view.findViewById(R.id.overview_id4);
         overViewTextView.setText(mOverView);
         return view;

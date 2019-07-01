@@ -10,6 +10,10 @@ public class Review
         this.mReviewContent = mReviewContent;
     }
 
+    public Review() {
+
+    }
+
     public String getmTitle() {
         return mTitle;
     }

@@ -3,6 +3,7 @@ package com.example.android.popularmovies.Util;
 
 
 import com.example.android.popularmovies.Model.Movie;
+import com.example.android.popularmovies.Model.Review;
 import com.example.android.popularmovies.Model.Trailer;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class JsonUtil
 {
+    public static final String AUTHOR = "author";
     private static final String ID = "id";
     private static final String RATE = "vote_average";
     private static final String TITLE = "title";
@@ -28,6 +30,7 @@ public class JsonUtil
     public static final String RESULTS = "results";
     public static final String TRAILERS_KEY = "key";
     public static final String TRAILER_NAME = "name";
+    public static final String CONTENT = "content";
 
     public static  List<Movie> extractMovieList(String json)
     {
@@ -107,5 +110,29 @@ public class JsonUtil
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static List<Review> extractMovieReviews(String json)
+    {
+        List<Review> reviews = new ArrayList<>();
+        try
+        {
+            JSONObject object = new JSONObject(json);
+            JSONArray reviewsArray = object.getJSONArray(RESULTS);
+            for (int x = 0;x<reviewsArray.length();x++)
+            {
+                JSONObject reviewObject = reviewsArray.getJSONObject(x);
+                Review review = new Review();
+                review.setmTitle(reviewObject.getString(AUTHOR));
+                review.setmReviewContent(reviewObject.getString(CONTENT));
+                reviews.add(review);
+            }
+
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return reviews;
     }
 }

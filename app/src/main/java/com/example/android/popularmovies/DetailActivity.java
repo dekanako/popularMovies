@@ -19,7 +19,6 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.android.popularmovies.Fragments.OverViewFragment;
+import com.example.android.popularmovies.Fragments.ReviewFragment.ReviewFragment;
 import com.example.android.popularmovies.Model.Movie;
 import com.example.android.popularmovies.Room.AppDBRoom;
 import com.example.android.popularmovies.Room.AppExecutors;
@@ -37,7 +38,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<String>
