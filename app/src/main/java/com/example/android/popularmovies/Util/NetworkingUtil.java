@@ -1,8 +1,5 @@
 package com.example.android.popularmovies.Util;
 
-
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -42,6 +39,7 @@ public class NetworkingUtil
     private static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
 
     private static final String TAG = NetworkingUtil.class.getName() ;
+    public static final String REVIEWS_PATH = "reviews";
 
     // "https://api.themoviedb.org/3/movie/458156?api_key=90429cbb0771760ab50be543df397f62&language=en-US\n"
    // public static final String Quality_2
@@ -81,18 +79,28 @@ public class NetworkingUtil
         return null;
     }
 
-    public static URL buildURLForOneMovie(int movieID)
+    public static Uri.Builder buildURLForOneMovie(int movieID)
     {
-        Uri movieUri =  Uri.parse(BASE_MOVIE_URL).buildUpon()
+
+        return Uri.parse(BASE_MOVIE_URL).buildUpon()
                 .appendEncodedPath(String.valueOf(movieID))
                 .appendQueryParameter(API_KEY,API_KEY_VALUE)
-                .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE)
+                .appendQueryParameter(LANGUAGE,LANGUAGE_VALUE);
+
+
+    }
+
+
+    public static URL buildURLForOneMovieWithTrailers(int movieID)
+    {
+        Uri movieUri = buildURLForOneMovie(movieID)
                 .appendQueryParameter(APPEND_TO_RESPONSE,APPEND_VALUE)
                 .build();
-         try
+        try
         {
             return new URL(movieUri.toString());
-        } catch
+        }
+        catch
         (MalformedURLException e)
         {
             e.printStackTrace();
@@ -127,9 +135,26 @@ public class NetworkingUtil
         return null;
     }
 
+    public static URL buildReviewURL(int movieID)
+    {
+        Uri movieUri = buildURLForOneMovie(movieID)
+                .appendEncodedPath(REVIEWS_PATH)
+                .build();
+
+        try
+        {
+            return new URL(movieUri.toString());
+        }
+        catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static String getResponseFromHttpUrlUsingScanner(URL url) throws IOException
     {
-        Log.d(TAG,"NETWORK CALL");
+        Log.d(TAG,"NETWORK CALL");Log.d(TAG,url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try
         {

@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
+import androidx.viewpager.widget.ViewPager;
 
 
 import android.content.DialogInterface;
@@ -48,9 +52,10 @@ public class DetailActivity extends AppCompatActivity
     private TextView mMovieTitleView;
     private TextView mDate;
     private TextView mRate;
-    private TextView mOverView;
+
     private ImageView playButtonImageView;
     private AppDBRoom mAppDBRoom;
+    private MyPagerAdapter adapterViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -65,9 +70,10 @@ public class DetailActivity extends AppCompatActivity
         mMovieTitleView = findViewById(R.id.movie_title_id);
         mRate = findViewById(R.id.rateing_id);
         mDate = findViewById(R.id.date_id);
-        mOverView = findViewById(R.id.overview_id);
         playButtonImageView = findViewById(R.id.play_trailer_youtube_button);
-
+        ViewPager vpPager = findViewById(R.id.movies_view_pager);
+        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
+        vpPager.setAdapter(adapterViewPager);
         playButtonImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -75,25 +81,7 @@ public class DetailActivity extends AppCompatActivity
                 if (mMovie.getTrailersArray().length>0)
                 {
 
-                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(v.getContext());
-
-
-                    builderSingle.setTitle("Trailers");
-
-                    builderSingle.setItems(mMovie.getTrailersNameArray(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[which].getYoutubeTrailerKey());
-                            Log.d(TAG,uri.toString());
-                            Intent intent = new Intent(Intent.ACTION_VIEW,uri);
-                            if (intent.resolveActivity(getPackageManager()) != null)
-                            {
-                                startActivity(intent);
-                            }
-                        }
-                    });
-                    builderSingle.setNegativeButton("cancel",null);
-                    builderSingle.show();
+                    showTrailersAlertDialog(v);
 
                 }
                 else
@@ -116,7 +104,7 @@ public class DetailActivity extends AppCompatActivity
                     .into(mBackgroundImage);
 
             mMovieTitleView.setText(mMovie.getFilmTitle());
-            mOverView.setText(mMovie.getOverView());
+
             mDate.setText(mMovie.getDate());
             mRate.setText(String.valueOf(mMovie.getRating()));
 
@@ -125,6 +113,29 @@ public class DetailActivity extends AppCompatActivity
             //appending /10 to the String to make it looks like 8/10 etc
             mRate.append("/10");
         }
+    }
+
+    private void showTrailersAlertDialog(View v)
+    {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(v.getContext());
+
+
+        builderSingle.setTitle("Trailers");
+
+        builderSingle.setItems(mMovie.getTrailersNameArray(), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Uri uri = NetworkingUtil.createYoutubeLink(mMovie.getTrailersArray()[which].getYoutubeTrailerKey());
+                Log.d(TAG,uri.toString());
+                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                if (intent.resolveActivity(getPackageManager()) != null)
+                {
+                    startActivity(intent);
+                }
+            }
+        });
+        builderSingle.setNegativeButton("cancel",null);
+        builderSingle.show();
 
     }
 
@@ -237,7 +248,8 @@ public class DetailActivity extends AppCompatActivity
             public String loadInBackground()
             {   String output = null;
 
-                URL url = NetworkingUtil.buildURLForOneMovie(finalMovieId);
+                URL url = NetworkingUtil.buildURLForOneMovieWithTrailers(finalMovieId);
+                Log.d(TAG,url.toString());
                 try
                 {
                    output = NetworkingUtil.getResponseFromHttpUrlUsingScanner(url);
@@ -256,11 +268,57 @@ public class DetailActivity extends AppCompatActivity
     {
         JsonUtil.extractTrailerPathAndAddTheTrailersToTheMovieObject(data,mMovie);
         playButtonImageView.setClickable(true);
+
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<String> loader)
     {
+
+    }
+    public   class MyPagerAdapter extends FragmentPagerAdapter {
+        private   int NUM_ITEMS = 2;
+
+        public MyPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        // Returns total number of pages
+        @Override
+        public int getCount()
+        {
+            return NUM_ITEMS;
+        }
+
+        // Returns the fragment to display for that page
+        @Override
+        public Fragment getItem(int position)
+        {
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+                    return OverViewFragment.newInstance(mMovie.getOverView());
+                case 1:
+                    return ReviewFragment.newInstance(mMovie.getDbMovieId());
+                default:
+                    return null;
+            }
+        }
+
+        // Returns the page title for the top indicator
+        @Override
+        public CharSequence getPageTitle(int position)
+        {
+            switch (position)
+            {
+                case 0:
+                    return "Overview";
+                case 1:
+                    return "Reviews";
+                default:
+                    return "";
+            }
+
+        }
 
     }
 }
