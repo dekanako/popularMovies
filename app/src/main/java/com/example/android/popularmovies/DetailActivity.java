@@ -35,6 +35,7 @@ import com.example.android.popularmovies.Room.AppExecutors;
 import com.example.android.popularmovies.Util.JsonUtil;
 import com.example.android.popularmovies.Util.NetworkingUtil;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
 import java.net.URL;
@@ -49,10 +50,6 @@ public class DetailActivity extends AppCompatActivity
     private Movie mMovie;
 
     private ImageView mBackgroundImage;
-    private TextView mMovieTitleView;
-    private TextView mDate;
-    private TextView mRate;
-
     private ImageView playButtonImageView;
     private AppDBRoom mAppDBRoom;
     private MyPagerAdapter adapterViewPager;
@@ -67,13 +64,15 @@ public class DetailActivity extends AppCompatActivity
 
         //initializing the views
         mBackgroundImage = findViewById(R.id.background_image_id);
-        mMovieTitleView = findViewById(R.id.movie_title_id);
-        mRate = findViewById(R.id.rateing_id);
-        mDate = findViewById(R.id.date_id);
         playButtonImageView = findViewById(R.id.play_trailer_youtube_button);
+
         ViewPager vpPager = findViewById(R.id.movies_view_pager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(vpPager);
+
         playButtonImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -103,15 +102,15 @@ public class DetailActivity extends AppCompatActivity
             Glide.with(this).load(NetworkingUtil.buildPhotoURL(mMovie.getCoverImage(),NetworkingUtil.BACKDROP_IMAGE_W1280))
                     .into(mBackgroundImage);
 
-            mMovieTitleView.setText(mMovie.getFilmTitle());
-
-            mDate.setText(mMovie.getDate());
-            mRate.setText(String.valueOf(mMovie.getRating()));
 
 
 
-            //appending /10 to the String to make it looks like 8/10 etc
-            mRate.append("/10");
+
+
+
+
+
+
         }
     }
 
@@ -296,7 +295,7 @@ public class DetailActivity extends AppCompatActivity
         {
             switch (position) {
                 case 0: // Fragment # 0 - This will show FirstFragment
-                    return OverViewFragment.newInstance(mMovie.getOverView());
+                    return OverViewFragment.newInstance(mMovie);
                 case 1:
                     return ReviewFragment.newInstance(mMovie.getDbMovieId());
                 default:
