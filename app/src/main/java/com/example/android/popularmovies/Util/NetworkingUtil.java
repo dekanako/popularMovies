@@ -1,7 +1,11 @@
 package com.example.android.popularmovies.Util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class NetworkingUtil
 {
@@ -124,6 +130,7 @@ public class NetworkingUtil
                 .appendEncodedPath(quality)
                 .appendEncodedPath(movieImagePath)
                 .build();
+        Log.d(TAG,movieUri.toString());
         try
         {
             return new URL(movieUri.toString());
@@ -179,6 +186,23 @@ public class NetworkingUtil
     public static Uri createYoutubeLink(String youtubeTrailerKey)
     {
         return Uri.parse(YOUTUBE_URL.concat(youtubeTrailerKey));
+    }
+    public static boolean isInternetConnection(RecyclerView recyclerView, TextView textView,Context context)
+    {
+
+        ConnectivityManager connectivityManager =  (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() == null )
+        {
+            recyclerView.setVisibility(View.INVISIBLE);
+            textView.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else
+        {
+            recyclerView.setVisibility(View.INVISIBLE);
+            textView.setVisibility(View.VISIBLE);
+            return true;
+        }
     }
 
 }

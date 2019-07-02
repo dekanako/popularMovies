@@ -65,10 +65,8 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Stetho.initializeWithDefaults(this);
         mOopsView = findViewById(R.id.ops_id);
         mRecyclerView = findViewById(R.id.recycle_view_id);
-
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mProgressBar = findViewById(R.id.progressBar);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -108,6 +106,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initQueries(int p)
     {
+
         Bundle bundle = new Bundle();
         if (getString(p).equals(getString(R.string.popular)))
         {
@@ -313,22 +312,28 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setAdapter(mMovieAdapter);
     }
 
-    public  boolean isInternetConnection() {
+    public boolean isInternetConnection()
+    {
 
         ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getActiveNetworkInfo() == null )
         {
-            mRecyclerView.setVisibility(View.INVISIBLE);
-            mOopsView.setVisibility(View.VISIBLE);
+            if (!mSelectedQuery.equals(getString(R.string.favourites)))
+            {
+                mRecyclerView.setVisibility(View.INVISIBLE);
+                mOopsView.setVisibility(View.VISIBLE);
+            }
+
             return false;
         }
         else
         {
-            mOopsView.setVisibility(View.INVISIBLE);
-            mRecyclerView.setVisibility(View.VISIBLE);
+
+                mOopsView.setVisibility(View.INVISIBLE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+
             return true;
         }
-
     }
 
 

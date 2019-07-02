@@ -99,7 +99,9 @@ public class DetailActivity extends AppCompatActivity
             args.putInt(TRAILER_KEY,mMovie.getDbMovieId());
             getSupportLoaderManager().initLoader(LOADER_ID,args,this).forceLoad();
 
+
             Glide.with(this).load(NetworkingUtil.buildPhotoURL(mMovie.getCoverImage(),NetworkingUtil.BACKDROP_IMAGE_W1280))
+                    .placeholder(R.drawable.place_holder)
                     .into(mBackgroundImage);
 
 
@@ -116,8 +118,7 @@ public class DetailActivity extends AppCompatActivity
 
     private void showTrailersAlertDialog(View v)
     {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(v.getContext());
-
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(v.getContext(),R.style.MyAlertDialogTheme);
 
         builderSingle.setTitle("Trailers");
 
@@ -265,6 +266,11 @@ public class DetailActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String data)
     {
+        if (data ==null)
+        {
+            playButtonImageView.setClickable(false);
+            return;
+        }
         JsonUtil.extractTrailerPathAndAddTheTrailersToTheMovieObject(data,mMovie);
         playButtonImageView.setClickable(true);
 
@@ -275,7 +281,8 @@ public class DetailActivity extends AppCompatActivity
     {
 
     }
-    public   class MyPagerAdapter extends FragmentPagerAdapter {
+    public class MyPagerAdapter extends FragmentPagerAdapter
+    {
         private   int NUM_ITEMS = 2;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {

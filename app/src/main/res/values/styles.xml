@@ -18,11 +18,11 @@
     </style>
 
 
-        <style name="AlertDialogCustom" parent="@android:style/Theme.Dialog">
-            <item name="android:textColor">#ffff</item>
-            <item name="android:typeface">monospace</item>
-            <item name="android:textSize">10sp</item>
-        </style>
+    <style name="MyAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/primaryDarkColor</item>
+        <item name="textColorAlertDialogListItem">#ffff</item>
+        <item name="android:textColor">#ffff</item>
+    </style>
 
 
 </resources>

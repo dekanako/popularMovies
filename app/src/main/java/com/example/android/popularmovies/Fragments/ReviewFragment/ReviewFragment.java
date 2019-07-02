@@ -1,5 +1,8 @@
 package com.example.android.popularmovies.Fragments.ReviewFragment;
 
+import android.app.Notification;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.popularmovies.Model.Review;
 import com.example.android.popularmovies.R;
@@ -31,6 +35,8 @@ public class ReviewFragment extends Fragment
     private RecyclerView mRecyclerView;
     private ReviewAdapter mReviewAdapter;
     private ProgressBar mProgressBar;
+    private TextView mOopsView;
+
     public static Fragment newInstance(int movieId)
     {
         Bundle args = new Bundle();
@@ -59,7 +65,12 @@ public class ReviewFragment extends Fragment
         mRecyclerView = view.findViewById(R.id.reviews_recycler_view_id);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mProgressBar = view.findViewById(R.id.progressBar2);
-        new ReviewsAsyncTask().execute(mMovieID);
+        mOopsView = view.findViewById(R.id.network_text_view);
+        if (isInternetConnection())
+        {
+            new ReviewsAsyncTask().execute(mMovieID);
+        }
+
         return view;
     }
     private class ReviewsAsyncTask extends AsyncTask<Integer,Void, List<Review>>
@@ -90,12 +101,30 @@ public class ReviewFragment extends Fragment
         @Override
         protected void onPostExecute(List<Review> reviews)
         {
-
             mReviewAdapter = new ReviewAdapter(reviews);
             mRecyclerView.setAdapter(mReviewAdapter);
             mProgressBar.setVisibility(View.INVISIBLE);
             mRecyclerView.setVisibility(View.VISIBLE);
 
         }
+
+    }
+    public  boolean isInternetConnection()
+    {
+
+        ConnectivityManager connectivityManager =  (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() == null )
+        {
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mOopsView.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else
+        {
+            mOopsView.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            return true;
+        }
     }
 }
+
